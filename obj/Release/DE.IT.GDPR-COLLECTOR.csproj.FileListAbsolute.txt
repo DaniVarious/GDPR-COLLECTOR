@@ -1,0 +1,10 @@
+C:\Development\DE.IT.GDPR-Collector\bin\Release\DE.IT.GDPR-COLLECTOR.exe.config
+C:\Development\DE.IT.GDPR-Collector\bin\Release\DE.IT.GDPR-COLLECTOR.exe
+C:\Development\DE.IT.GDPR-Collector\bin\Release\DE.IT.GDPR-COLLECTOR.pdb
+C:\Development\DE.IT.GDPR-Collector\obj\Release\DE.IT.GDPR-COLLECTOR.csproj.AssemblyReference.cache
+C:\Development\DE.IT.GDPR-Collector\obj\Release\DE.IT.GDPR_COLLECTOR.Form1.resources
+C:\Development\DE.IT.GDPR-Collector\obj\Release\DE.IT.GDPR_COLLECTOR.Properties.Resources.resources
+C:\Development\DE.IT.GDPR-Collector\obj\Release\DE.IT.GDPR-COLLECTOR.csproj.GenerateResource.cache
+C:\Development\DE.IT.GDPR-Collector\obj\Release\DE.IT.GDPR-COLLECTOR.csproj.CoreCompileInputs.cache
+C:\Development\DE.IT.GDPR-Collector\obj\Release\DE.IT.GDPR-COLLECTOR.exe
+C:\Development\DE.IT.GDPR-Collector\obj\Release\DE.IT.GDPR-COLLECTOR.pdb
