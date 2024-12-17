@@ -14,13 +14,14 @@ using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.IO;
 using System.Xml;
+using System.Diagnostics.Eventing.Reader;
 
 namespace DE.IT.GDPR_COLLECTOR
 {
     public partial class Form1 : Form
     {
-        private SqlConnection conn = new SqlConnection(@"Data Source = PRADE-DB-006; Initial Catalog = IT; Integrated Security = True; Encrypt=False");
-      
+        private SqlConnection conn = new SqlConnection(@"Data Source = PRADE-DB-006; Initial Catalog = IT; Integrated Security = True;User Id=SchnittStellenUser; Password=whoami321;Encrypt=False"); // 
+        private string result;
 
         public Form1()
         {
@@ -102,22 +103,22 @@ namespace DE.IT.GDPR_COLLECTOR
 
                     if (Type15 == false)
                     {
-                        sql3 = "SELECT Historyno, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno = 0  ORDER BY time DESC";
+                        sql3 = "SELECT Historyno, (SELECT TOP(1) '1' FROM NOVA_LIGHT.dbo.niHstAtt NHA WHERE NHA.HistoryNo=nihist.Historyno) ATT, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno = 0  ORDER BY time DESC";
                     }
                     else
                     {
-                        sql3 = "SELECT Historyno, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno = 0  and Type=15 ORDER BY time DESC";
+                        sql3 = "SELECT Historyno, (SELECT TOP(1) '1' FROM NOVA_LIGHT.dbo.niHstAtt NHA WHERE NHA.HistoryNo=nihist.Historyno) ATT,objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno = 0  and Type=15 ORDER BY time DESC";
                     }
                 }
                 else
                 {
                     if (Type15 == false)
                     {
-                        sql3 = "SELECT Historyno, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=4 AND objectno IN (" + allSelectedDebtors + ") UNION SELECT Historyno, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno IN (" + allSelectedDebtors + ") UNION SELECT Historyno, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno = 0  ORDER BY time DESC";
+                        sql3 = "SELECT Historyno, (SELECT TOP(1) '1' FROM NOVA_LIGHT.dbo.niHstAtt NHA WHERE NHA.HistoryNo=nihist.Historyno) ATT, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=4 AND objectno IN (" + allSelectedDebtors + ") UNION SELECT Historyno, (SELECT TOP(1) '1' FROM NOVA_LIGHT.dbo.niHstAtt NHA WHERE NHA.HistoryNo=nihist.Historyno) ATT,objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno IN (" + allSelectedDebtors + ") UNION SELECT Historyno, (SELECT TOP(1) '1' FROM NOVA_LIGHT.dbo.niHstAtt NHA WHERE NHA.HistoryNo=nihist.Historyno) ATT, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno = 0  ORDER BY time DESC";
                     }
                     else
                     {
-                        sql3 = "SELECT Historyno, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=4 AND objectno IN (" + allSelectedDebtors + ") and Type=15 UNION SELECT Historyno, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno IN (" + allSelectedDebtors + ") and Type=15 UNION SELECT Historyno, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno = 0 and Type=15 ORDER BY time DESC";
+                        sql3 = "SELECT Historyno, (SELECT TOP(1) '1' FROM NOVA_LIGHT.dbo.niHstAtt NHA WHERE NHA.HistoryNo=nihist.Historyno) ATT, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=4 AND objectno IN (" + allSelectedDebtors + ") and Type=15 UNION SELECT Historyno, (SELECT TOP(1) '1' FROM NOVA_LIGHT.dbo.niHstAtt NHA WHERE NHA.HistoryNo=nihist.Historyno) ATT, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno IN (" + allSelectedDebtors + ") and Type=15 UNION SELECT Historyno, (SELECT TOP(1) '1' FROM NOVA_LIGHT.dbo.niHstAtt NHA WHERE NHA.HistoryNo=nihist.Historyno) ATT, objecttype, objectno, subno, CONVERT(VARCHAR,TIME,120)Time, Type, Collector, Action,CONVERT(varchar(max), CONVERT(VarBinary(MAX), Data))Data FROM nova_light.dbo.nihist WHERE objecttype=1 AND objectno IN (" + textBox1.Text + ") AND subno = 0 and Type=15 ORDER BY time DESC";
                     }
                 }
             
@@ -126,38 +127,60 @@ namespace DE.IT.GDPR_COLLECTOR
 
             //dataset.Tables[0].Columns.Add(new DataColumn() { ColumnName = "Checked", DataType = typeof(bool), DefaultValue = false });
                 adapter.Fill(dt);
-            }
-
-
-            while (dataGridView1.Rows.Count > 0)
-            {
-                dataGridView1.Rows.Clear();
-            }
             
 
-            foreach (DataRow row in dt.Tables[0].Rows)
-            {
-                //  row.ItemArray.
-                //dataGridView1.Rows.Add("false", row.Cells["Historyno"].Value.ToString());
-                //row.Cells["Historyno"].Value.ToString()
 
-                var historyRow = new DataGridViewRow();
+                while (dataGridView1.Rows.Count > 0)
+                {
+                    dataGridView1.Rows.Clear();
+                }
+            
+
+                foreach (DataRow row in dt.Tables[0].Rows)
+                {
+                    //  row.ItemArray.
+                    //dataGridView1.Rows.Add("false", row.Cells["Historyno"].Value.ToString());
+                    //row.Cells["Historyno"].Value.ToString()
+
+                    var historyRow = new DataGridViewRow();
                 
-                // Unchecked checkbox
-                historyRow.Cells.Add(new DataGridViewCheckBoxCell() { Value = false });
+                    // Unchecked checkbox
+                    historyRow.Cells.Add(new DataGridViewCheckBoxCell() { Value = false });
 
-                // Add data to the row
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Historyno"].ToString() });
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["ObjectType"].ToString() });
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["ObjectNo"].ToString() });
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["SubNo"].ToString() });
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Time"].ToString() });
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Type"].ToString() });
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Collector"].ToString() });
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Action"].ToString() });
-                historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Data"].ToString() });
+                    // Add data to the row
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Historyno"].ToString() });
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["ATT"].ToString() });
 
-                dataGridView1.Rows.Add(historyRow);
+                    if (row["Data"].ToString().Contains("AKTIFF") == true)
+                    {
+                        historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = "1" }); //AK
+                    }
+                    else
+                    {
+                        historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = "" }); //AK
+                    }
+
+                    if (row["Action"].ToString().Contains(".msg,") == true || row["Action"].ToString().Contains(".rtf,") == true)
+                    {
+                        historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value =  "1"  }); //Hst 
+                    }
+                    else
+                    {
+                        historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = "" }); //Hst 
+                    }
+                    
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["ObjectType"].ToString() });
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["ObjectNo"].ToString() });
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["SubNo"].ToString() });
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Time"].ToString() });
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Type"].ToString() });
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Collector"].ToString() });
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Action"].ToString() });
+                    historyRow.Cells.Add(new DataGridViewTextBoxCell() { Value = row["Data"].ToString() });
+                    
+                    dataGridView1.Rows.Add(historyRow);
+                }
+
             }
 
             dataGridView1.Columns[0].Visible = true;
@@ -168,8 +191,17 @@ namespace DE.IT.GDPR_COLLECTOR
             
         }
 
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            string version = System.Windows.Forms.Application.ProductVersion;
+            this.Text = String.Format("DE.IT.GDPR-COLLECTOR Version {0}", version);
+
+            textBox2.Text = Properties.Settings.Default["ExportPath"].ToString();
+            string TB = Properties.Settings.Default["TestButton"].ToString();
+            button1.Visible = bool.Parse(TB);
+            //Properties.Settings.Default["ExportPath"]
+
             DataGridViewCheckBoxColumn SelectedColumn = new DataGridViewCheckBoxColumn();
             {
                 SelectedColumn.HeaderText = "";
@@ -183,10 +215,34 @@ namespace DE.IT.GDPR_COLLECTOR
 
             DataGridViewTextBoxColumn HistoryNoColumn = new DataGridViewTextBoxColumn();
             {
-                //checkColumn.HeaderText = "";
+                HistoryNoColumn.HeaderText = "HistoryNo";
                 HistoryNoColumn.Name = "HistoryNo";
                 HistoryNoColumn.Width = 30;
                 HistoryNoColumn.CellTemplate = new DataGridViewTextBoxCell();
+            }
+
+            DataGridViewTextBoxColumn ATTColumn = new DataGridViewTextBoxColumn();
+            {
+                ATTColumn.HeaderText = "ATT";
+                ATTColumn.Name = "ATT";
+                ATTColumn.Width = 30;
+                ATTColumn.CellTemplate = new DataGridViewTextBoxCell();
+            }
+
+            DataGridViewTextBoxColumn AKColumn = new DataGridViewTextBoxColumn();
+            {
+                AKColumn.HeaderText = "AK";
+                AKColumn.Name = "AK";
+                AKColumn.Width = 30;
+                AKColumn.CellTemplate = new DataGridViewTextBoxCell();
+            }
+
+            DataGridViewTextBoxColumn HstColumn = new DataGridViewTextBoxColumn();
+            {
+                HstColumn.HeaderText = "HST";
+                HstColumn.Name = "Hst";
+                HstColumn.Width = 30;
+                HstColumn.CellTemplate = new DataGridViewTextBoxCell();
             }
 
             DataGridViewTextBoxColumn ObjectTypeColumn = new DataGridViewTextBoxColumn();
@@ -251,10 +307,13 @@ namespace DE.IT.GDPR_COLLECTOR
                 DataColumn.Width = 30;
                 DataColumn.CellTemplate = new DataGridViewTextBoxCell();
             }
-
+ 
 
             dataGridView1.Columns.Add(SelectedColumn);
             dataGridView1.Columns.Add(HistoryNoColumn);
+            dataGridView1.Columns.Add(ATTColumn);
+            dataGridView1.Columns.Add(AKColumn);
+            dataGridView1.Columns.Add(HstColumn);
             dataGridView1.Columns.Add(ObjectTypeColumn);
             dataGridView1.Columns.Add(ObjectNoColumn);
             dataGridView1.Columns.Add(SubNoColumn);
@@ -263,7 +322,7 @@ namespace DE.IT.GDPR_COLLECTOR
             dataGridView1.Columns.Add(CollectorColumn);
             dataGridView1.Columns.Add(ActionColumn);
             dataGridView1.Columns.Add(DataColumn);
-
+            
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -272,6 +331,9 @@ namespace DE.IT.GDPR_COLLECTOR
             var csv = new StringBuilder();
             string first=String.Empty;
             string HistoryNo = String.Empty;
+            string ATTColumnRead = String.Empty;
+            string AKColumnRead = String.Empty;
+            string HstColumnRead = String.Empty;
             string ObjectType = String.Empty;
             string ObjectNo = String.Empty;
             string SubNo = String.Empty;
@@ -298,12 +360,15 @@ namespace DE.IT.GDPR_COLLECTOR
                             firstLine = true;
                             if (dataGridView1.Rows.Count > 0)
                             {
-                                var newLine = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}", "HistoryNo", "ObjectType", "ObjectNo", "SubNo", "Time", "Type", "Collector", "Action", "Data");
+                                var newLine = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}", "HistoryNo",  "ObjectType", "ObjectNo", "SubNo", "Time", "Type", "Collector", "Action", "Data");
                                 csv.AppendLine(newLine);
                             }
                         }
 
                         HistoryNo = dataGridView1.Rows[row.Index].Cells["HistoryNo"].Value.ToString();
+                        ATTColumnRead = dataGridView1.Rows[row.Index].Cells["ATT"].Value.ToString();
+                        AKColumnRead = dataGridView1.Rows[row.Index].Cells["AK"].Value.ToString();
+                        HstColumnRead = dataGridView1.Rows[row.Index].Cells["HST"].Value.ToString();
                         ObjectType = dataGridView1.Rows[row.Index].Cells["ObjectType"].Value.ToString();
                         ObjectNo = dataGridView1.Rows[row.Index].Cells["ObjectNo"].Value.ToString();
                         SubNo = dataGridView1.Rows[row.Index].Cells["SubNo"].Value.ToString();
@@ -311,7 +376,17 @@ namespace DE.IT.GDPR_COLLECTOR
                         Type = dataGridView1.Rows[row.Index].Cells["Type"].Value.ToString();
                         Collector = dataGridView1.Rows[row.Index].Cells["Collector"].Value.ToString();
                         action = dataGridView1.Rows[row.Index].Cells["Action"].Value.ToString();
-                        DataColumnRead = dataGridView1.Rows[row.Index].Cells["Data"].Value.ToString();
+
+                        if(ATTColumnRead== "1"|| AKColumnRead=="1"|| HstColumnRead == "1")
+                        {
+                            DataColumnRead = "";
+                        }
+                        else
+                        {
+                            DataColumnRead = dataGridView1.Rows[row.Index].Cells["Data"].Value.ToString();
+                        }
+                        
+                        
 
                         //in your loop
                         first = DataColumnRead.Replace("@echo off", "");
@@ -351,16 +426,436 @@ namespace DE.IT.GDPR_COLLECTOR
 
         }
 
-        private void button4_Click(object sender, EventArgs e)
+
+        private void button9_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog folderDlg = new FolderBrowserDialog();
-            DialogResult dresult = folderDlg.ShowDialog();
-            if (dresult == DialogResult.OK)
+
+          
+            bool firstLine = false;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                textBox2.Text = folderDlg.SelectedPath;
-                Environment.SpecialFolder root = folderDlg.RootFolder;
+
+                if ((bool)row.Cells[0].Value == true)
+                {
+                    if (dataGridView1[0, row.Index].Value.ToString() == "True")
+                    {
+                        string HistoryNo = dataGridView1.Rows[row.Index].Cells["HistoryNo"].Value.ToString();
+                        string ATT = dataGridView1.Rows[row.Index].Cells["ATT"].Value.ToString();
+                        string AK = dataGridView1.Rows[row.Index].Cells["AK"].Value.ToString();
+                        string Hst = dataGridView1.Rows[row.Index].Cells["Hst"].Value.ToString();
+
+                        if (ATT.Length > 0)
+                        {
+                            string sql = "usp_ExportImage_from_niHstAtt";
+                            SqlCommand command = conn.CreateCommand();
+                            command.CommandText = sql;
+                            command.CommandType = System.Data.CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@HIstoryNo", HistoryNo);
+                            command.Parameters.AddWithValue("@ImageFolderExportPath", textBox2.Text.ToString());
+
+
+                            SqlParameter returnparameter = command.Parameters.Add("@ReturnVal", SqlDbType.Text);
+                            returnparameter.Direction = ParameterDirection.ReturnValue;
+
+                            try
+                            {
+                                conn.Open();
+                                command.ExecuteNonQuery();
+                                string result = returnparameter.Value.ToString();
+
+                                conn.Close();
+
+                                if (result == "0")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Wurde exportiert nach " + textBox2.Text.ToString(), "Export finished");
+                                }
+                                else if (result == "2")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Beinhaltet einen externen Pfad - keine Daten zum Exportieren vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "3")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Record vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "6")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Zugriff auf den Pfad oder die Datei", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(HistoryNo + ": Konnte nicht exportiert werden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Ein unbekannter SQL-Fehler trat auf", "SQL-Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                conn.Close();
+                            }
+
+
+                        }
+
+
+                        if (AK.Length > 0)
+                        {
+                            string sql = "usp_ExportTIFF_from_niDocImg";
+                            SqlCommand command = conn.CreateCommand();
+                            command.CommandText = sql;
+                            command.CommandType = System.Data.CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@HIstoryNo", HistoryNo);
+                            command.Parameters.AddWithValue("@ImageFolderExportPath", textBox2.Text.ToString());
+
+
+                            SqlParameter returnparameter = command.Parameters.Add("@ReturnVal", SqlDbType.Text);
+                            returnparameter.Direction = ParameterDirection.ReturnValue;
+
+                            try
+                            {
+                                conn.Open();
+                                command.ExecuteNonQuery();
+                                string result = returnparameter.Value.ToString();
+
+                                conn.Close();
+
+                                if (result == "0")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Wurde exportiert nach " + textBox2.Text.ToString(), "Export finished");
+                                }
+                                else if (result == "2")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Beinhaltet einen externen Pfad - keine Daten zum Exportieren vorhanden", "Export failed",MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "3")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Record vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "6")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Zugriff auf den Pfad oder die Datei", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(HistoryNo + ": Konnte nicht exportiert werden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Ein unbekannter SQL-Fehler trat auf","SQL-Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                conn.Close();
+                            }
+
+                        }
+
+
+                        if (Hst.Length > 0)
+                        {
+                            string sql = "usp_ExportImage_from_niHist";
+                            SqlCommand command = conn.CreateCommand();
+                            command.CommandText = sql;
+                            command.CommandType = System.Data.CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@HIstoryNo", HistoryNo);
+                            command.Parameters.AddWithValue("@ImageFolderExportPath", textBox2.Text.ToString());
+
+
+                            SqlParameter returnparameter = command.Parameters.Add("@ReturnVal", SqlDbType.Text);
+                            returnparameter.Direction = ParameterDirection.ReturnValue;
+
+                            try
+                            {
+                                conn.Open();
+                                command.ExecuteNonQuery();
+                                string result = returnparameter.Value.ToString();
+
+                                conn.Close();
+
+                                if (result == "0")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Wurde exportiert nach " + textBox2.Text.ToString(), "Export finished");
+                                }
+                                else if (result == "2")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Beinhaltet einen externen Pfad - keine Daten zum Exportieren vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "3")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Record vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "6")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Zugriff auf den Pfad oder die Datei", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(HistoryNo + ": Konnte nicht exportiert werden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Ein unbekannter SQL-Fehler trat auf", "SQL-Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                conn.Close();
+                            }
+                        }
+
+                        if (checkBox2.Checked == false)
+                        {
+                            dataGridView1[0, row.Index].Value = false;
+                        }
+                        
+                    }
+                }
+
+
             }
-            
+
+            MessageBox.Show("Export abgeschlossen", "Export finished");
+
         }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default["ExportPath"] = textBox2.Text;
+            //Properties.Settings.Default["TestButton"] = FALSE;
+            Properties.Settings.Default.Save();
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            
+
+            bool firstLine = false;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+
+                if ((bool)row.Cells[0].Value == true)
+                {
+                    if (dataGridView1[0, row.Index].Value.ToString() == "True")
+                    {
+                        //AccountID 4493037 -> HistoryNo=53119323
+                        string HistoryNo = dataGridView1.Rows[row.Index].Cells["HistoryNo"].Value.ToString();
+                        string HST = dataGridView1.Rows[row.Index].Cells["HST"].Value.ToString();
+
+                        if (HST.Length > 0)
+                        {
+                            string sql = "usp_ExportImage_from_niHist";
+                            SqlCommand command = conn.CreateCommand();
+                            command.CommandText = sql;
+                            command.CommandType = System.Data.CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@HIstoryNo", HistoryNo);
+                            command.Parameters.AddWithValue("@ImageFolderExportPath", textBox2.Text.ToString());
+
+
+                            SqlParameter returnparameter = command.Parameters.Add("@ReturnVal", SqlDbType.Text);
+                            returnparameter.Direction = ParameterDirection.ReturnValue;
+
+                            try
+                            {
+                                conn.Open();
+                                command.ExecuteNonQuery();
+                                string result = returnparameter.Value.ToString();
+
+                                conn.Close();
+
+                                if (result == "0")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Wurde exportiert nach " + textBox2.Text.ToString(), "Export finished");
+                                }
+                                else if (result == "2")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Beinhaltet einen externen Pfad - keine Daten zum Exportieren vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "3")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Record vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "6")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Zugriff auf den Pfad oder die Datei", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(HistoryNo + ": Konnte nicht exportiert werden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Ein unbekannter SQL-Fehler trat auf", "SQL-Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                conn.Close();
+                            }
+
+
+
+                            if (checkBox2.Checked == false)
+                            {
+                                dataGridView1[0, row.Index].Value = false;
+                            }
+                        }
+
+
+
+                    }
+                }
+            }
+
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            bool firstLine = false;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+
+                if ((bool)row.Cells[0].Value == true)
+                {
+                    if (dataGridView1[0, row.Index].Value.ToString() == "True")
+                    {
+                        //AccountID 4493037 -> HistoryNo=53119323
+                        string HistoryNo = dataGridView1.Rows[row.Index].Cells["HistoryNo"].Value.ToString();
+                        string ATT = dataGridView1.Rows[row.Index].Cells["ATT"].Value.ToString();
+
+                        if (ATT.Length > 0)
+                        {
+                            string sql = "usp_ExportImage_from_niHstAtt";
+                            SqlCommand command = conn.CreateCommand();
+                            command.CommandText = sql;
+                            command.CommandType = System.Data.CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@HIstoryNo", HistoryNo);
+                            command.Parameters.AddWithValue("@ImageFolderExportPath", textBox2.Text.ToString());
+
+
+                            SqlParameter returnparameter = command.Parameters.Add("@ReturnVal", SqlDbType.Text);
+                            returnparameter.Direction = ParameterDirection.ReturnValue;
+
+                            try
+                            {
+                                conn.Open();
+                                command.ExecuteNonQuery();
+                                string result = returnparameter.Value.ToString();
+
+                                conn.Close();
+
+                                if (result == "0")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Wurde exportiert nach " + textBox2.Text.ToString(), "Export finished");
+                                }
+                                else if (result == "2")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Beinhaltet einen externen Pfad - keine Daten zum Exportieren vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "3")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Record vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "6")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Zugriff auf den Pfad oder die Datei", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(HistoryNo + ": Konnte nicht exportiert werden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Ein unbekannter SQL-Fehler trat auf", "SQL-Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                conn.Close();
+                            }
+
+
+
+                            if (checkBox2.Checked == false)
+                            {
+                                dataGridView1[0, row.Index].Value = false;
+                            }
+                        }
+
+
+
+                    }
+                }
+            }
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            bool firstLine = false;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+
+                if ((bool)row.Cells[0].Value == true)
+                {
+                    if (dataGridView1[0, row.Index].Value.ToString() == "True")
+                    {
+                        //AccountID 4493037 -> HistoryNo=53119323
+                        string HistoryNo = dataGridView1.Rows[row.Index].Cells["HistoryNo"].Value.ToString();
+                        string AK = dataGridView1.Rows[row.Index].Cells["AK"].Value.ToString();
+
+                        if (AK.Length > 0)
+                        {
+                            string sql = "usp_ExportTIFF_from_niDocImg";
+                            SqlCommand command = conn.CreateCommand();
+                            command.CommandText = sql;
+                            command.CommandType = System.Data.CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@HIstoryNo", HistoryNo);
+                            command.Parameters.AddWithValue("@ImageFolderExportPath", textBox2.Text.ToString());
+
+
+                            SqlParameter returnparameter = command.Parameters.Add("@ReturnVal", SqlDbType.Text);
+                            returnparameter.Direction = ParameterDirection.ReturnValue;
+
+                            try
+                            {
+                                conn.Open();
+                                command.ExecuteNonQuery();
+                                string result = returnparameter.Value.ToString();
+
+                                conn.Close();
+
+                                if (result == "0")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Wurde exportiert nach " + textBox2.Text.ToString(), "Export finished");
+                                }
+                                else if (result == "2")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Beinhaltet einen externen Pfad - keine Daten zum Exportieren vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "3")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Record vorhanden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (result == "6")
+                                {
+                                    MessageBox.Show(HistoryNo + ": Kein Zugriff auf den Pfad oder die Datei", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(HistoryNo + ": Konnte nicht exportiert werden", "Export failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Ein unbekannter SQL-Fehler trat auf", "SQL-Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                conn.Close();
+                            }
+
+
+
+                            if (checkBox2.Checked == false)
+                            {
+                                dataGridView1[0, row.Index].Value = false;
+                            }
+                        }
+
+
+
+                    }
+                }
+            }
+        }
+
     }
 }

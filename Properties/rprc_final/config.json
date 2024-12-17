@@ -1,0 +1,11 @@
+﻿{
+    "database": {
+        "connection": "Server=PRADE-DB-006;Database=NOVA_LIGHT;User Id=SchnittStellenUser;Password=whoami321;TrustServerCertificate=Yes;",
+        "language": "en",
+        "encoding": "windows-1250",
+        "batchSize": 100,
+        "letterDataTable": "",
+        "letterDataFilter": "",
+        "outputPath": "./{h.ObjectType}/{h.HistoryNo}_{h.Action}.pdf"
+    }
+}
